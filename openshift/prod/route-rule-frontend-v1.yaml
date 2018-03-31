@@ -1,0 +1,13 @@
+apiVersion: config.istio.io/v1alpha2
+kind: RouteRule
+metadata:
+  name: frontend
+spec:
+  destination:
+    namespace: prod
+  precedence: 1
+  route:
+  - labels:
+      app: frontend
+      version: v1
+    weight: 100
