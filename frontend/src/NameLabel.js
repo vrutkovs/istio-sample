@@ -1,19 +1,6 @@
 import React from 'react';
 
 class NameLabel extends React.Component {
-
-  static fetchData(match) {
-    var url = 'http://backend:8000/stranger'
-
-    fetch(url)
-    .then(function(response) {
-      if (response.status >= 400) {
-        throw new Error("Bad response from server");
-      }
-      return response.json()['message'];
-    })
-  }
-
   constructor() {
     super();
     this.state = {
@@ -22,9 +9,15 @@ class NameLabel extends React.Component {
   }
 
   componentDidMount() {
-    this.constructor.fetchData(this.props.match).then(data => {
-        this.setState({ data })
-    })
+    var that = this;
+
+    var fromServer = fetch('/hello')
+    .then((response) => response.text())
+    .then(function(message) {
+      that.setState({ message: message });
+    }).catch(function(err) {
+      console.log("Error " + err);
+    });
   }
 
   render() {
