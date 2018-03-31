@@ -4,7 +4,7 @@ RUN dnf install -y npm
 
 ADD . /code
 WORKDIR /code
-RUN npm install
+RUN npm install && npm run compile
 
 EXPOSE 3000
 
