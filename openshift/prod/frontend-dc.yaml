@@ -2,6 +2,8 @@ apiVersion: v1
 kind: DeploymentConfig
 metadata:
   annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"DeploymentConfig","metadata":{"annotations":{"openshift.io/generated-by":"OpenShiftNewApp"},"creationTimestamp":null,"generation":1,"labels":{"app":"frontend"},"name":"frontend","namespace":"prod"},"spec":{"replicas":1,"revisionHistoryLimit":10,"selector":{"app":"frontend","deploymentconfig":"frontend"},"strategy":{"activeDeadlineSeconds":21600,"resources":{},"rollingParams":{"intervalSeconds":1,"maxSurge":"25%","maxUnavailable":"25%","timeoutSeconds":600,"updatePeriodSeconds":1},"type":"Rolling"},"template":{"metadata":{"annotations":{"openshift.io/generated-by":"OpenShiftNewApp","sidecar.istio.io/status":"{\"version\":\"1e8f480eee0d2c455cb96c4acc9a723ca2b4bff32a7837e65787a5ef6853c820\",\"initContainers\":[\"istio-init\",\"enable-core-dump\"],\"containers\":[\"istio-proxy\"],\"volumes\":[\"istio-envoy\",\"istio-certs\"]}"},"creationTimestamp":null,"labels":{"app":"frontend","deploymentconfig":"frontend"}},"spec":{"containers":[{"image":"docker-registry.default.svc:5000/staging/frontend@sha256:3a8731cb6a652500b6ee21ae13d2a3282ee48015c43036ecf15182d4e6346d44","imagePullPolicy":"Always","name":"frontend","ports":[{"containerPort":3000,"protocol":"TCP"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File"},{"args":["proxy","sidecar","--configPath","/etc/istio/proxy","--binaryPath","/usr/local/bin/envoy","--serviceCluster","frontend","--drainDuration","45s","--parentShutdownDuration","1m0s","--discoveryAddress","istio-pilot.istio-system:15003","--discoveryRefreshDelay","1s","--zipkinAddress","zipkin.istio-system:9411","--connectTimeout","10s","--statsdUdpAddress","istio-mixer.istio-system:9125","--proxyAdminPort","15000","--controlPlaneAuthPolicy","NONE"],"env":[{"name":"POD_NAME","valueFrom":{"fieldRef":{"fieldPath":"metadata.name"}}},{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}},{"name":"INSTANCE_IP","valueFrom":{"fieldRef":{"fieldPath":"status.podIP"}}}],"image":"docker.io/istio/proxy:0.6.0","imagePullPolicy":"IfNotPresent","name":"istio-proxy","resources":{},"securityContext":{"privileged":false,"readOnlyRootFilesystem":true,"runAsUser":1337},"volumeMounts":[{"mountPath":"/etc/istio/proxy","name":"istio-envoy"},{"mountPath":"/etc/certs/","name":"istio-certs","readOnly":true}]}],"dnsPolicy":"ClusterFirst","initContainers":[{"args":["-p","15001","-u","1337"],"image":"docker.io/istio/proxy_init:0.6.0","imagePullPolicy":"IfNotPresent","name":"istio-init","resources":{},"securityContext":{"capabilities":{"add":["NET_ADMIN"]}}},{"args":["-c","sysctl -w kernel.core_pattern=/etc/istio/proxy/core.%e.%p.%t \u0026\u0026 ulimit -c unlimited"],"command":["/bin/sh"],"image":"alpine","imagePullPolicy":"IfNotPresent","name":"enable-core-dump","resources":{},"securityContext":{"privileged":true}}],"restartPolicy":"Always","schedulerName":"default-scheduler","securityContext":{},"terminationGracePeriodSeconds":30,"volumes":[{"emptyDir":{"medium":"Memory"},"name":"istio-envoy"},{"name":"istio-certs","secret":{"optional":true,"secretName":"istio.default"}}]}},"test":false,"triggers":[{"type":"ConfigChange"},{"imageChangeParams":{"automatic":true,"containerNames":["frontend"],"from":{"kind":"ImageStreamTag","name":"frontend:v1"}},"type":"ImageChange"}]},"status":{"availableReplicas":0,"latestVersion":0,"observedGeneration":0,"replicas":0,"unavailableReplicas":0,"updatedReplicas":0}}
     openshift.io/generated-by: OpenShiftNewApp
   creationTimestamp: null
   generation: 1
@@ -28,13 +30,20 @@ spec:
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftNewApp
+        pod.alpha.kubernetes.io/init-containers: '[{"name":"istio-init","image":"docker.io/istio/proxy_init:0.6.0","args":["-p","15001","-u","1337"],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"IfNotPresent","securityContext":{"capabilities":{"add":["NET_ADMIN"]}}},{"name":"enable-core-dump","image":"alpine","command":["/bin/sh"],"args":["-c","sysctl
+          -w kernel.core_pattern=/etc/istio/proxy/core.%e.%p.%t \u0026\u0026 ulimit
+          -c unlimited"],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"IfNotPresent","securityContext":{"privileged":true}}]'
+        pod.beta.kubernetes.io/init-containers: '[{"name":"istio-init","image":"docker.io/istio/proxy_init:0.6.0","args":["-p","15001","-u","1337"],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"IfNotPresent","securityContext":{"capabilities":{"add":["NET_ADMIN"]}}},{"name":"enable-core-dump","image":"alpine","command":["/bin/sh"],"args":["-c","sysctl
+          -w kernel.core_pattern=/etc/istio/proxy/core.%e.%p.%t \u0026\u0026 ulimit
+          -c unlimited"],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"IfNotPresent","securityContext":{"privileged":true}}]'
+        sidecar.istio.io/status: '{"version":"1e8f480eee0d2c455cb96c4acc9a723ca2b4bff32a7837e65787a5ef6853c820","initContainers":["istio-init","enable-core-dump"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"]}'
       creationTimestamp: null
       labels:
         app: frontend
         deploymentconfig: frontend
     spec:
       containers:
-      - image: docker-registry.default.svc:5000/staging/frontend@sha256:3a8731cb6a652500b6ee21ae13d2a3282ee48015c43036ecf15182d4e6346d44
+      - image: docker-registry.default.svc:5000/prod/frontend@sha256:9f7a2ce2bdc65e0714ce994f24d8da674682586a624a40f8ea7fb70e36b8bc14
         imagePullPolicy: Always
         name: frontend
         ports:
@@ -43,11 +52,109 @@ spec:
         resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
+      - args:
+        - proxy
+        - sidecar
+        - --configPath
+        - /etc/istio/proxy
+        - --binaryPath
+        - /usr/local/bin/envoy
+        - --serviceCluster
+        - frontend
+        - --drainDuration
+        - 45s
+        - --parentShutdownDuration
+        - 1m0s
+        - --discoveryAddress
+        - istio-pilot.istio-system:15003
+        - --discoveryRefreshDelay
+        - 1s
+        - --zipkinAddress
+        - zipkin.istio-system:9411
+        - --connectTimeout
+        - 10s
+        - --statsdUdpAddress
+        - istio-mixer.istio-system:9125
+        - --proxyAdminPort
+        - "15000"
+        - --controlPlaneAuthPolicy
+        - NONE
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        image: docker.io/istio/proxy:0.6.0
+        imagePullPolicy: IfNotPresent
+        name: istio-proxy
+        resources: {}
+        securityContext:
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsUser: 1337
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/istio/proxy
+          name: istio-envoy
+        - mountPath: /etc/certs/
+          name: istio-certs
+          readOnly: true
       dnsPolicy: ClusterFirst
+      initContainers:
+      - args:
+        - -p
+        - "15001"
+        - -u
+        - "1337"
+        image: docker.io/istio/proxy_init:0.6.0
+        imagePullPolicy: IfNotPresent
+        name: istio-init
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      - args:
+        - -c
+        - sysctl -w kernel.core_pattern=/etc/istio/proxy/core.%e.%p.%t && ulimit -c
+          unlimited
+        command:
+        - /bin/sh
+        image: alpine
+        imagePullPolicy: IfNotPresent
+        name: enable-core-dump
+        resources: {}
+        securityContext:
+          privileged: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
+      volumes:
+      - emptyDir:
+          medium: Memory
+        name: istio-envoy
+      - name: istio-certs
+        secret:
+          defaultMode: 420
+          optional: true
+          secretName: istio.default
   test: false
   triggers:
   - type: ConfigChange
@@ -58,6 +165,7 @@ spec:
       from:
         kind: ImageStreamTag
         name: frontend:v1
+        namespace: prod
     type: ImageChange
 status:
   availableReplicas: 0
