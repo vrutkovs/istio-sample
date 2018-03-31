@@ -58,7 +58,6 @@ spec:
       from:
         kind: ImageStreamTag
         name: backend:latest
-        namespace: staging
     type: ImageChange
 status:
   availableReplicas: 0
